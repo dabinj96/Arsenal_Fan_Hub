@@ -1,0 +1,20 @@
+{
+  "name": "arsenal_fan_hub",
+  "version": "1.0.0",
+  "description": "A web application that displays Arsenal’s upcoming fixtures, recent results, player stats, and simple analytics. This project demonstrates a modern DevSecOps workflow by integrating CI/CD automation, containerization, and security scans into the development process.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dabinj96/Arsenal_Fan_Hub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dabinj96/Arsenal_Fan_Hub/issues"
+  },
+  "homepage": "https://github.com/dabinj96/Arsenal_Fan_Hub#readme"
+}
