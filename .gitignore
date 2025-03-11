@@ -1,2 +1,37 @@
-node_modules
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+bower_components/
+
+# Build output
+dist/
+build/
+
+# Environment variables
 .env
+.env.local
+.env.development
+.env.production
+
+# Editor/IDE config
+.vscode/
+.idea/
+
+# Docker overrides
+docker-compose.override.yml
+
+# Optional: coverage from tests
+coverage/
+
+# Optional: OS-specific
+.DS_Store

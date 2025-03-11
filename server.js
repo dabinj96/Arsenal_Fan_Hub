@@ -5,6 +5,13 @@ const PORT = process.env.PORT || 3000;                  // Set port
 const axios = require('axios');                         // Import axios
 const pool = require('./db');                           // Import pool from db.js
 const cron = require('node-cron');                      // Import node-cron
+const cors = require('cors');                           // Import cors
+
+app.use(cors({
+  origin: 'http://localhost:5173'                      // Allow requests from frontend
+}));                                                    // Enable CORS
+
+app.use(express.json());                                // Enable JSON parsing
 
 // Start server
 app.listen(PORT, () => {
@@ -74,23 +81,6 @@ app.get('/api/db-fixtures', async (req, res) => {
   } catch (error) {
     console.error('Error fetching fixtures', error);
     res.status(500).json({ error: 'An error occurred while fetching fixtures' });
-  }
-});
-
-// Create a route to fetch a single fixture by ID
-app.get('/api/db-fixtures/:match_id', async (req, res) => {
-  try {
-    const { match_id } = req.params;
-    const result = await pool.query('SELECT * FROM fixtures WHERE match_id = $1', [match_id]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Fixture not found' });
-    }
-
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching fixture', error);
-    res.status(500).json({ error: 'An error occurred while fetching fixture' });
   }
 });
 
