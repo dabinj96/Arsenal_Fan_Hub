@@ -4,6 +4,7 @@ const app = express();                                  // Create express app
 const PORT = process.env.PORT || 3000;                  // Set port
 const axios = require('axios');                         // Import axios
 const pool = require('./db');                           // Import pool from db.js
+const cron = require('node-cron');                      // Import node-cron
 
 // Start server
 app.listen(PORT, () => {
@@ -13,33 +14,45 @@ app.listen(PORT, () => {
 // Define routes
 app.get('/api/fixtures', async (req, res) => {
   try {
+    await fetchAndStoreFixtures();
+    res.json({ message: 'Fixtures fetched and stored successfully' });
+  } catch (error) {
+    console.error('Error fetching fixtures', error);
+    res.status(500).json({ error: 'An error occurred while fetching fixtures' });
+  }
+});
+
+const fetchAndStoreFixtures = async () => {
+  try {
+    console.log('Fetching fixtures from API...');
+
     const response = await axios.get('https://api.football-data.org/v4/teams/57/matches/', {
       headers: {
         'X-Auth-Token': process.env.API_KEY
       }
     });
 
-    // Extract the data from the API response
-    const fixtures = response.data.matches; 
+    const fixtures = response.data.matches;
 
-    // Iterate over the fixtures and insert them into the database
     for (const match of fixtures) {
-      // Destructure the match object
       const { id, utcDate, status, homeTeam, awayTeam, score, lastUpdated } = match;
 
-      // Insert the match into the database\
       await pool.query(
         'INSERT INTO fixtures (match_id, utc_date, status, home_team, away_team, score, last_updated) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (match_id) DO UPDATE SET utc_date = EXCLUDED.utc_date, status = EXCLUDED.status, home_team = EXCLUDED.home_team, away_team = EXCLUDED.away_team, score = EXCLUDED.score, last_updated = EXCLUDED.last_updated',
         [id, utcDate, status, homeTeam.name, awayTeam.name, JSON.stringify(score), lastUpdated]
       );
     }
 
-    const dbResponse = await pool.query('SELECT * FROM fixtures');
-    res.json(dbResponse.rows);
+    console.log('Fixtures fetched and stored successfully');
   } catch (error) {
     console.error('Error fetching fixtures', error);
-    res.status(500).json({ error: 'An error occurred while fetching fixtures' });
   }
+};
+
+// Schedule the task to run every 3 hours
+cron.schedule('0 */3 * * *', async () => {
+  console.log('Running scheduled fixture update...');
+  await fetchAndStoreFixtures();
 });
 
 // Create a test route to verify database connection
